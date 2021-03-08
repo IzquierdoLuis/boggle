@@ -15,7 +15,7 @@ Java - visit https://www.oracle.com/java/technologies/javase-downloads.html
 Open the folder and run the Boggle.java file
 
 ```
-cd proyecto/src/
+cd boggle/src/
 ```
 
 ```
