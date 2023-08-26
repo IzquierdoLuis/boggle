@@ -186,7 +186,7 @@ public class Boggle extends JFrame implements ActionListener{
 
     //metodo para buscar palabras
     //true = si esta. false = no esta.
-    boolean buscar(String llave){
+    private boolean buscarPalabra(String llave){
         int nivel = 0;
         int largo = llave.length();
         int index;
@@ -341,6 +341,16 @@ public class Boggle extends JFrame implements ActionListener{
         ocupadas.clear();
     }
 
+    private void buscarDisponibles(int desdeX, int hastaX, int desdeY, int hastaY){
+        for (int i = desdeX; i < hastaX; i++) {
+            for (int j = desdeY; j < hastaY; j++) {
+                if(!ocupadas.contains(tablero[i][j])){
+                    hacerDisponible(tablero[i][j]);
+                }
+            }
+        }
+    }
+
     //verifica si las casillas estan en el rango permitido
     private void buscarAdyacente(JButton botonPulsado){
         int x = botonPulsado.getBounds().x / 50;
@@ -361,107 +371,46 @@ public class Boggle extends JFrame implements ActionListener{
         // palabra.setText("x,y: " + x + ", " + y);
 
         //la letra no esta en la orilla ni es esquina
-        if(x < 7 && x > 0 && y < 7 && y > 0){
-            for (int i = (x-1); i <= (x+1); i++) {
-                for (int j = (y-1); j <= (y+1); j++) {
-                    if(!ocupadas.contains(tablero[i][j])){
-                        disponibles(tablero[i][j]);
-                    }
-                }
-            }
+        if(x<7 && x>0 && y<7 && y>0){
+            buscarDisponibles(x-1, x+2, y-1, y+2);
         }
         else if(x == 0){
             if(y == 0){
-                
                 //esquina superior izquierda
-                for (int i = 0; i < 2; i++) {
-                    for (int j = 0; j < 2; j++) {
-                        if(!ocupadas.contains(tablero[i][j])){
-                            disponibles(tablero[i][j]);
-                        }
-                    }
-                }
+                buscarDisponibles(0, 2, 0, 2);
             }
             else if(y < 7){
-                
                 //orilla izquierda
-                for (int i = x; i <= (x+1); i++) {
-                    for (int j = (y-1); j <= (y+1); j++) {
-                        if(!ocupadas.contains(tablero[i][j])){
-                            disponibles(tablero[i][j]);
-                        }
-                    }
-                }
+                buscarDisponibles(x, x+2, y-1, y+2);
             }
             else{
-
                 //esquina inferior izquierda
-                for (int i = x; i <= (x+1); i++) {
-                    for (int j = (y-1); j <= y; j++) {
-                        if(!ocupadas.contains(tablero[i][j])){
-                            disponibles(tablero[i][j]);
-                        }
-                    }
-                }
+                buscarDisponibles(x, x+2, y-1, y+1);
             }
         }
         else if(y == 0){
-
             //orilla superior
             if(x < 7 && x > 0){
-                for (int i = (x-1); i <= (x+1); i++) {
-                    for (int j = y; j <= (y+1); j++) {
-                        if(!ocupadas.contains(tablero[i][j])){
-                            disponibles(tablero[i][j]);
-                        }
-                    }
-                }
+                buscarDisponibles(x-1, x+2, y, y+2);
             }
-
             //esquina superior derecha
             else{
-                for (int i = 6; i < 8; i++){
-                    for (int j = 0; j < 2; j++){
-                        if(!ocupadas.contains(tablero[i][j])){
-                            disponibles(tablero[i][j]);
-                        }
-                    }
-                }
+                buscarDisponibles(6, 8, 0, 2);
             }
         }
         else if(y == 7){
-
             //orilla inferior
             if(x > 0 && x < 7){
-                for (int i = (x-1); i <= (x+1); i++) {
-                    for (int j = (y-1); j <= y; j++) {
-                        if(!ocupadas.contains(tablero[i][j])){
-                            disponibles(tablero[i][j]);
-                        }
-                    }
-                }
+                buscarDisponibles(x-1, x+2, y-1, y+1);
             }
             else{
                 //esquina inferior derecha
-                for (int i = 6; i < 8; i++){
-                    for (int j = 6; j < 8; j++){
-                        if(!ocupadas.contains(tablero[i][j])){
-                            disponibles(tablero[i][j]);
-                        }
-                    }
-                }
+                buscarDisponibles(6, 8, 6, 8);
             }
         }
         else if(x == 7 && y > 0 && y < 7){
-
             //orilla derecha
-            for (int i = (x-1); i <= x; i++) {
-                for (int j = (y-1); j <= (y+1); j++) {
-                    if(!ocupadas.contains(tablero[i][j])){
-                        disponibles(tablero[i][j]);
-                    }
-                }
-            }
+            buscarDisponibles(x-1, x+1, y-1, y+2);
         }
     }
     
@@ -475,7 +424,7 @@ public class Boggle extends JFrame implements ActionListener{
     }
 
     //activa las casillas en el rango permitido
-    private void disponibles(JButton pulsado){
+    private void hacerDisponible(JButton pulsado){
         pulsado.setBackground(Color.BLUE);
         pulsado.setForeground(Color.WHITE);
         pulsado.setEnabled(true);
@@ -509,7 +458,7 @@ public class Boggle extends JFrame implements ActionListener{
             aux += entrada.length();
 
             //true = si esta en el trie la palabra introducida.
-            if(buscar(entrada) == true){
+            if(buscarPalabra(entrada) == true){
                 //false = no se ha introducido la palabra, true = ya fue introducida.
                 if(palabrasUsadas.containsKey(indiceHash(entrada))){
                     reiniciarTablero();
